@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday, My Love</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d0104;
+            --card-bg: rgba(25, 4, 10, 0.65);
+            --primary-red: #9e1b32;
+            --accent-pink: #ff4d6d;
+            --text-light: #f5f3f4;
+            --gold: #d4af37;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: radial-gradient(circle at center, #2c050f 0%, #0d0104 100%);
+        }
+
+        /* Ambient Sparkles Background */
+        #particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            background: var(--accent-pink);
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatUp 6s infinite linear;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(105vh) scale(0.3); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-5vh) scale(1.2); opacity: 0; }
+        }
+
+        /* Core Screen Logic */
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 600px;
+            padding: 25px;
+            text-align: center;
+            z-index: 10;
+            animation: fadeIn 1s ease forwards;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Glassmorphic UI Containers */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 77, 109, 0.15);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 35px 25px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            color: var(--accent-pink);
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 77, 109, 0.4);
+        }
+
+        p {
+            font-weight: 300;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #d3d3d3;
+        }
+
+        /* Interactive Buttons */
+        .btn-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+            min-height: 60px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 35px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-red), var(--accent-pink));
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 77, 109, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-light);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        #btn-no {
+            position: absolute;
+            transition: all 0.15s ease-out;
+            z-index: 100;
+        }
+
+        /* Screen 1 specific gif style */
+        .gif-container img {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border: 3px solid var(--accent-pink);
+        }
+
+        /* Dashboard Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .menu-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 77, 109, 0.1);
+            padding: 20px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 77, 109, 0.1);
+            transform: scale(1.03);
+            border-color: var(--accent-pink);
+        }
+
+        .menu-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        /* Card Match Mini Game */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: var(--primary-red);
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: transparent;
+            transition: transform 0.3s, background-color 0.3s;
+            user-select: none;
+        }
+
+        .memory-card.flipped {
+            background: rgba(255,255,255,0.1);
+            color: initial;
+            transform: rotateY(180deg);
+        }
+
+        .memory-card.matched {
+            background: rgba(0, 200, 100, 0.2);
+            color: initial;
+            cursor: default;
+        }
+
+        /* Multi-step Quiz Feedback styling */
+        .quiz-feedback {
+            margin-top: 15px;
+            font-weight: 600;
+            min-height: 24px;
+        }
+
+        /* Photo Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            background: #25030a;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 77, 109, 0.2);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1) rotate(2deg);
+        }
+
+        /* Final Countdown Block Layout */
+        .countdown-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 25px 0;
+        }
+
+        .time-box {
+            background: rgba(255,255,255,0.05);
+            padding: 10px 15px;
+            border-radius: 10px;
+            min-width: 70px;
+            border-bottom: 3px solid var(--accent-pink);
+        }
+
+        .time-num {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        .time-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="particle-container"></div>
+
+    <div id="screen-gatekeeper" class="screen active">
+        <div class="card">
+            <div class="gif-container">
+                <img id="gatekeeper-gif" src="https://placekitten.com/200/200" alt="Cute response indicator">
+            </div>
+            <h1 id="gatekeeper-heading">Will you be my Birthday Star? 🥺</h1>
+            <p id="gatekeeper-text">Wishing the happiest birthday to the most amazing person in my life. Ready for your surprise?</p>
+            <div class="btn-container">
+                <button class="btn btn-primary" onclick="advanceToNextScreen('screen-gatekeeper', 'screen-intro')">YES</button>
+                <button class="btn btn-secondary" id="btn-no" onmouseover="dodgeNoButton()">NO</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-intro" class="screen">
+        <div class="card">
+            <h1>HAPPY BIRTHDAY</h1>
+            <h2 style="font-family:'Dancing Script', cursive; color: var(--gold); font-size: 2.2rem; margin-bottom: 10px;">My Beautiful Love ❤️</h2>
+            <p style="font-style: italic; font-size: 0.9rem; color: #aaa;">A dark romantic journey built just for you.</p>
+            <button class="btn btn-primary" onclick="advanceToNextScreen('screen-intro', 'screen-dashboard')">BEGIN THE JOURNEY</button>
+        </div>
+    </div>
+
+    <div id="screen-dashboard" class="screen">
+        <div class="card">
+            <h1>Birthday Surprises 🎁</h1>
+            <p>Complete all tasks below to unlock your ultimate final heart message!</p>
+            
+            <div class="menu-grid">
+                <div class="menu-item" onclick="openSubSection('dashboard-quiz')">
+                    <div class="menu-icon">👑</div>
+                    <div class="menu-title">Birthday Quiz</div>
+                </div>
+                <div class="menu-item" onclick="openSubSection('dashboard-gallery')">
+                    <div class="menu-icon">🎬</div>
+                    <div class="menu-title">Eternal Moments</div>
+                </div>
+                <div class="menu-item" onclick="openSubSection('dashboard-game')">
+                    <div class="menu-icon">💖</div>
+                    <div class="menu-title">Love Match</div>
+                </div>
+                <div class="menu-item" onclick="openSubSection('dashboard-letter')">
+                    <div class="menu-icon">✉️</div>
+                    <div class="menu-title">Read My Heart</div>
+                </div>
+            </div>
+
+            <div id="dashboard-quiz" class="subview" style="display:none; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                <h3>Who gives the best birthday surprises?</h3>
+                <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+                    <button class="btn btn-secondary" onclick="checkQuizAnswer(false)">You</button>
+                    <button class="btn btn-secondary" onclick="checkQuizAnswer(true)">Me (Your Favorite Person)</button>
+                    <button class="btn btn-secondary" onclick="checkQuizAnswer(false)">Both of us</button>
+                </div>
+                <div id="quiz-msg" class="quiz-feedback"></div>
+            </div>
+
+            <div id="dashboard-gallery" class="subview" style="display:none; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                <h3>Our Memories</h3>
+                <div class="gallery-grid">
+                    <div class="gallery-item"><img src="https://picsum.photos/id/1025/150/150" alt="Memory"></div>
+                    <div class="gallery-item"><img src="https://picsum.photos/id/64/150/150" alt="Memory"></div>
+                    <div class="gallery-item"><img src="https://picsum.photos/id/1062/150/150" alt="Memory"></div>
+                </div>
+                <button class="btn btn-secondary" style="padding: 6px 15px; font-size:0.8rem;" onclick="markTaskDone('gallery')">Mark Read ✓</button>
+            </div>
+
+            <div id="dashboard-game" class="subview" style="display:none; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                <h3>Match the Hearts</h3>
+                <div class="game-grid" id="game-matrix"></div>
+                <div id="game-msg" class="quiz-feedback"></div>
+            </div>
+
+            <div id="dashboard-letter" class="subview" style="display:none; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                <h3 style="font-family:'Dancing Script', cursive; font-size:1.8rem; color:var(--gold);">To the one who holds my heart...</h3>
+                <p style="font-size:0.9rem; text-align:left; margin-top:10px;">
+                    Every single day with you feels like an incredible gift, but today is extra special. You bring light into my world even on the darkest days. Thank you for your warmth, your laughs, and for just being you. Happy Birthday, beautiful.
+                </p>
+                <button class="btn btn-secondary" style="padding: 6px 15px; font-size:0.8rem;" onclick="markTaskDone('letter')">I Read It ❤️</button>
+            </div>
+
+            <button id="btn-unlock-finale" class="btn btn-primary" style="margin-top: 30px; display:none;" onclick="advanceToNextScreen('screen-dashboard', 'screen-countdown')">Reveal Final Surprise ✨</button>
+        </div>
+    </div>
+
+    <div id="screen-countdown" class="screen">
+        <div class="card">
+            <h1>I Love You</h1>
+            <p style="font-family:'Dancing Script', cursive; font-size:1.8rem; color: var(--gold); margin-bottom:5px;">Forever & Always</p>
+            <p style="font-size:0.85rem; color:#aaa;">UNTIL YOUR NEXT BIG DAY</p>
+            
+            <div class="countdown-container">
+                <div class="time-box"><div class="time-num" id="days">365</div><div class="time-label">Days</div></div>
+                <div class="time-box"><div class="time-num" id="hours">00</div><div class="time-label">Hrs</div></div>
+                <div class="time-box"><div class="time-num" id="minutes">00</div><div class="time-label">Min</div></div>
+                <div class="time-box"><div class="time-num" id="seconds">00</div><div class="time-label">Sec</div></div>
+            </div>
+
+            <button class="btn btn-secondary" style="font-size:0.8rem;" onclick="restartExperience()">Restart Journey ↺</button>
+        </div>
+    </div>
+
+    <script>
+        /* Ambient Background Particle Generator Engine */
+        const particleContainer = document.getElementById('particle-container');
+        const particleCount = 40;
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.width = particle.style.height = (Math.random() * 6 + 4) + 'px';
+            particle.style.animationDelay = Math.random() * 6 + 's';
+            particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+            particleContainer.appendChild(particle);
+        }
+
+        /* Navigational Flow Systems */
+        function advanceToNextScreen(currentId, nextId) {
+            document.getElementById(currentId).classList.remove('active');
+            document.getElementById(nextId).classList.add('active');
+            if(nextId === 'screen-countdown') {
+                initializeCountdownEngine();
+            }
+        }
+
+        function restartExperience() {
+            document.getElementById('screen-countdown').classList.remove('active');
+            document.getElementById('screen-gatekeeper').classList.add('active');
+            resetGatekeeperScreen();
+            resetDashboardSystems();
+        }
+
+        /* Evasive 'No' Button Gatekeeper Logic (Prank loops) */
+        let dodgeCount = 0;
+        const gatekeeperGifs = [
+            "https://placekitten.com/200/200", // Initial Vibe
+            "https://placekitten.com/201/201", // Think again 🤨
+            "https://placekitten.com/202/202", // Are you sure? 😡
+            "https://placekitten.com/203/203"  // Click YES! 🥺
+        ];
+        const headings = [
+            "Will you be my Birthday Star? 🥺",
+            "Think again 🤨",
+            "Are you sure you want to skip your surprise? 😡",
+            "Please? See this... 🥺"
+        ];
+
+        function dodgeNoButton() {
+            const btnNo = document.getElementById('btn-no');
+            dodgeCount++;
+
+            // Playful position shifts inside viewport bounding limits
+            const x = Math.random() * (window.innerWidth - 120) - (window.innerWidth / 2 - 60);
+            const y = Math.random() * (window.innerHeight - 100) - (window.innerHeight / 2 - 50);
+            
+            btnNo.style.transform = `translate(${x}px, ${y}px)`;
+
+            // Dynamically morph titles/images to mimic step-by-step video alerts
+            if (dodgeCount <= 3) {
+                document.getElementById('gatekeeper-heading').innerText = headings[dodgeCount];
+                document.getElementById('gatekeeper-gif').src = gatekeeperGifs[dodgeCount];
+            }
+        }
+
+        function resetGatekeeperScreen() {
+            dodgeCount = 0;
+            const btnNo = document.getElementById('btn-no');
+            btnNo.style.transform = `translate(0px, 0px)`;
+            document.getElementById('gatekeeper-heading').innerText = headings[0];
+            document.getElementById('gatekeeper-gif').src = gatekeeperGifs[0];
+        }
+
+        /* Dashboard & Modular Puzzle Subviews Routing Logic */
+        const userProgress = { quiz: false, gallery: false, game: false, letter: false };
+
+        function openSubSection(sectionId) {
+            document.querySelectorAll('.subview').forEach(view => view.style.display = 'none');
+            document.getElementById(sectionId).style.display = 'block';
+            if (sectionId === 'dashboard-game') {
+                buildMemoryMatchMatrix();
+            }
+        }
+
+        function markTaskDone(taskKey) {
+            userProgress[taskKey] = true;
+            evaluateUnlockStatus();
+        }
+
+        function evaluateUnlockStatus() {
+            if (userProgress.quiz && userProgress.gallery && userProgress.game && userProgress.letter) {
+                document.getElementById('btn-unlock-finale').style.display = 'inline-block';
+            }
+        }
+
+        function resetDashboardSystems() {
+            for (let key in userProgress) userProgress[key] = false;
+            document.getElementById('btn-unlock-finale').style.display = 'none';
+            document.querySelectorAll('.subview').forEach(view => view.style.display = 'none');
+            document.getElementById('quiz-msg').innerText = '';
+        }
+
+        /* Mini-Task Logic: Birthday Quiz Panel */
+        function checkQuizAnswer(isCorrect) {
+            const feedback = document.getElementById('quiz-msg');
+            if (isCorrect) {
+                feedback.style.color = '#00c864';
+                feedback.innerText = "Correct! You're an angel! ✨";
+                markTaskDone('quiz');
+            } else {
+                feedback.style.color = 'var(--accent-pink)';
+                feedback.innerText = "Opps, please try again 🤫";
+            }
+        }
+
+        /* Mini-Task Logic: Love Match Memory Card Matrix Engine */
+        const symbols = ['🌹', '🌹', '👑', '👑', '🎁', '🎁', '💖', '💖'];
+        let activeSelectionCards = [];
+        let canInteractWithGrid = true;
+
+        function buildMemoryMatchMatrix() {
+            const matrixGrid = document.getElementById('game-matrix');
+            matrixGrid.innerHTML = '';
+            activeSelectionCards = [];
+            canInteractWithGrid = true;
+            document.getElementById('game-msg').innerText = '';
+
+            // Fast shallow clean shuffle logic
+            const currentDeck = [...symbols].sort(() => Math.random() - 0.5);
+
+            currentDeck.forEach((char, index) => {
+                const cardNode = document.createElement('div');
+                cardNode.classList.add('memory-card');
+                cardNode.dataset.symbol = char;
+                cardNode.dataset.index = index;
+                cardNode.innerText = char;
+                cardNode.addEventListener('click', handleCardFlipClick);
+                matrixGrid.appendChild(cardNode);
+            });
+        }
+
+        function handleCardFlipClick() {
+            if (!canInteractWithGrid || this.classList.contains('flipped') || this.classList.contains('matched')) return;
+
+            this.classList.add('flipped');
+            activeSelectionCards.push(this);
+
+            if (activeSelectionCards.length === 2) {
+                canInteractWithGrid = false;
+                evaluateCardPairMatch();
+            }
+        }
+
+        function evaluateCardPairMatch() {
+            const [firstCard, secondCard] = activeSelectionCards;
+            if (firstCard.dataset.symbol === secondCard.dataset.symbol) {
+                firstCard.classList.add('matched');
+                secondCard.classList.add('matched');
+                activeSelectionCards = [];
+                canInteractWithGrid = true;
+                verifyAllCardsCleared();
+            } else {
+                setTimeout(() => {
+                    firstCard.classList.remove('flipped');
+                    secondCard.classList.remove('flipped');
+                    activeSelectionCards = [];
+                    canInteractWithGrid = true;
+                }, 900);
+            }
+        }
+
+        function verifyAllCardsCleared() {
+            const remainingCount = document.querySelectorAll('.memory-card:not(.matched)').length;
+            if (remainingCount === 0) {
+                const feedback = document.getElementById('game-msg');
+                feedback.style.color = '#00c864';
+                feedback.innerText = "Matches complete! You unlocked my heart! 🔒💞";
+                markTaskDone('game');
+            }
+        }
+
+        /* Dynamic Continuous Real-Time Countdown Timer Engine */
+        let countingIntervalInstance = null;
+
+        function initializeCountdownEngine() {
+            if (countingIntervalInstance) clearInterval(countingIntervalInstance);
+
+            // Programmatically calculates exactly 1 year out to keep the clock looping indefinitely for demo accuracy
+            const targetCountdownTimePoint = new Date().getTime() + (275 * 24 * 60 * 60 * 1000); 
+
+            function executeClocksTick() {
+                const deltaDuration = targetCountdownTimePoint - new Date().getTime();
+
+                if (deltaDuration <= 0) {
+                    clearInterval(countingIntervalInstance);
+                    return;
+                }
+
+                const days = Math.floor(deltaDuration / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((deltaDuration % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((deltaDuration % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((deltaDuration % (1000 * 60)) / 1000);
+
+                document.getElementById('days').innerText = String(days).padStart(2, '0');
+                document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+                document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+            }
+
+            executeClocksTick();
+            countingIntervalInstance = setInterval(executeClocksTick, 1000);
+        }
+    </script>
+</body>
+</html>
